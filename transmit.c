@@ -1,4 +1,6 @@
 #include <math.h>
+#include <crypto-handler.h>
+
 
 B = 1; // bandwidth from pre-configured C-V2X settings
 TC = 500; // certificate transmission interval in ms (default)
@@ -53,20 +55,20 @@ HCid = 1; //authenticated certificate
       SigC = classic signature
       SigQR = quantum resistent signature
       M = current BSM
-      skIDc = classic secret key for device ID
-      skIDqr = quantum resistent key for device ID
+      skIDc = classic secret key for device ID  	// key_gen() for ECDSA sig
+      skIDqr = quantum resistent key for device ID  // key_gen() for FALCON sig
 
-      SigC, SigQR = signatures over M using skIDc, skIDqr
+      SigC, SigQR = signatures over M using skIDc, skIDqr // sign_message()?
       Si = SPDU containing M, HCi, SigC, SigQR
       
-      Transmit Si
+      Transmit Si									// raw_tx()
       i = i + 1
       
     else:
     
       SigC, SigQR = signatures over M using skIDc, skIDqr
       S = SPDU containing M, SigC, SigQR
-      Transmit S
+      Transmit S									// raw_tx()
       
     end if
   end for
