@@ -2,27 +2,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include "CHASM-structs.h"
 
 
-// retains a single fragment and its length
-typedef struct {
-	size_t fragmentLen;
-	char *fragmentString;
-} fragment;
-
-
-// manages a set number of fragments
-typedef struct {
-	size_t fragmentCount;
-	fragment *fragments;
-} fragmentHolder;
-
-
-
-
-
-int main() {
-
+void test_fragments() {
 	// set constant sizes for test
 	size_t count = 3;
 	size_t fragLen = 3;
@@ -50,6 +33,12 @@ int main() {
 			}
 		printf("\n");
 	}
+}
+
+
+int main() {
+
+	test_fragments();
 
 
 }
