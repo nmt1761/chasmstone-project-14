@@ -24,7 +24,7 @@ typedef struct {
 	// vehicle's ECDSA public key
 	uint8_t *ECDSAPublickey;
 	// vehicle's PQC public key
-	uint8_t *PQCKey;
+	uint8_t *PQCPublicKey;
 	// CA ECDSA signature of certificate
 	uint8_t *ECDSASignatureCA;
 	// CA PQC signature of certificate
