@@ -8,23 +8,15 @@ HdrSec = 1; // IEEE 1609.2 security headers
 M = 1; // current BSM Message
 SigC = 1; // classic signature
 SigQR = 1; // quantum resistent signature
-q, r = 1; // sourced from MCS (Modulation and Coding Scheme)
-Nrb = 1; // number of Resource Blocks ? may depend on bandwidth
+q = 2;     // q, r outlined in Section V table 1 of chasm paper (16-QAM, q = 4, r = 0.36)
+r = 0.66; // sourced from MCS (Modulation and Coding Scheme)
+Nrb = 50; // can also be 100 number of Resource Blocks ? may depend on bandwidth
 HCid = 1; //authenticated certificate
 
-/*
-  Pseduocode below huzzah!
 
-  HdrSec = IEEE 1609.2 security headers
-  min|S| = |HdrSec| + |M| + |SigC| + |SigQR|
-  max|TB| = 12 * 10 * log2(q) * r * (Nrb - 2) * 1/8
-  max|HCf| = max|TB| - min|S|
-  nf = ceilingFunction(|HC|/max|HCf|)
-*/
-
-
-
-  list FRAGMENT(HCid, q, r, B) {
+  // FRAGMENT function will return a struct containg (number of certificate fragments, (an array of all fragments) )
+  // \/ int is a placeholder
+  int FRAGMENT(HCid, q, r, B) {
     
     // Calculating some variables needed for fragmentation function
     // minimum size of an SPDU
