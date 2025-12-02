@@ -1,14 +1,9 @@
-/*
- * crypto-handler.h
- *
- *  Created on: Nov 9, 2025
- *      Author: duser
- */
-
 #ifndef CRYPTO_HANDLER_H_
 #define CRYPTO_HANDLER_H_
 
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 
 
 void print_hex(const char *label,

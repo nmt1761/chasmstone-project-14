@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "CHASM-structs.h"
+#include "falcon.h"
+#include "crypto-handler.h"
+#include "receive.h"
 
 
 void test_fragments() {
@@ -38,7 +41,12 @@ void test_fragments() {
 
 int main() {
 
-	test_fragments();
+	//test_fragments();
+
+	unsigned int logn = 9;
+	size_t pub_len  = FALCON_PUBKEY_SIZE(logn);
+	hybridCertificate *cert = createTestCert();
+	print_hex("Cert Public Key", cert->PQCPublicKey, pub_len);
 
 
 }

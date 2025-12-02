@@ -46,3 +46,34 @@ Algorithm2CHASM:ReceivingandVerifyingSPDUs
  38: endif
  39: endprocedure
  */
+
+#include "CHASM-structs.h"
+#include "crypto-handler.h"
+#include "falcon.h"
+#include <stdlib.h>
+
+
+hybridCertificate *createTestCert() {
+	hybridCertificate *cert = malloc(sizeof(hybridCertificate));
+
+	unsigned int logn = 9;
+	size_t priv_len = FALCON_PRIVKEY_SIZE(logn);
+	size_t pub_len  = FALCON_PUBKEY_SIZE(logn);
+	size_t sig_len  = FALCON_SIG_PADDED_SIZE(logn);
+	uint8_t privkey[FALCON_PRIVKEY_SIZE(logn)];
+	uint8_t pubkey[FALCON_PUBKEY_SIZE(logn)];
+
+	key_gen(logn, true,
+				privkey, priv_len,
+				pubkey, pub_len,
+				true);
+
+	cert->securityHeaders = 0x00;
+	cert->ECDSAPublickey = NULL;
+	cert->PQCPublicKey = malloc(pub_len);
+	memcpy(cert->PQCPublicKey, pubkey, pub_len);
+	cert->ECDSASignatureCA = NULL;
+	cert->PQCSignatureCA = NULL;
+
+	return cert;
+}

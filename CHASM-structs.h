@@ -1,6 +1,8 @@
 #ifndef CHASM_STRUCTS_H_
 #define CHASM_STRUCTS_H_
 
+#include <stdint.h>
+#include <stddef.h>
 
 // retains a single fragment and its length
 typedef struct {
