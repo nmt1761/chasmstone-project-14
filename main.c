@@ -45,6 +45,9 @@ int main() {
 	/* test the fragment structure*/
 	//test_fragments();
 
+	// vehicle id
+	uint8_t id[4] = {0x01,0x01,0x01,0x01};
+
 
 	/* test the receiver */
 	// falcon 512
@@ -67,13 +70,19 @@ int main() {
 	printf("after keypair\n");
 
 	printf("creating test cert\n");
-	hybridCertificate *cert = createTestCert(true,
+	hybridCertificate *cert = createTestCert(id, true,
 											 pubKey, pubLen,
 											 privKey, privLen);
 	printf("created test cert\n");
 
 	//print_hex("Cert Public Key", cert->PQCPublicKey, pubLen);
 	//print_hex("Cert Signature", cert->PQCSignatureCA, sigLen);
+
+	printf("received cert from vehicle: ");
+	for (int i = 0; i < 4; i++) {
+	    printf("%02X", id[i]);
+	}
+	printf("\n");
 
 	int res = verify_signature(logn, "test",
 					cert->PQCSignatureCA, sigLen,

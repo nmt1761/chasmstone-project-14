@@ -8,7 +8,7 @@
 #ifndef RECEIVE_H_
 #define RECEIVE_H_
 
-hybridCertificate *createTestCert(bool genCAKey,
+hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 								  uint8_t *privkey, size_t priv_len,
 								  uint8_t *pubkey, size_t pub_len);
 

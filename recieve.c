@@ -56,7 +56,7 @@ Algorithm2CHASM:ReceivingandVerifyingSPDUs
 #include <string.h>
 
 
-hybridCertificate *createTestCert(bool genCAKey,
+hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 								  uint8_t *privKey, size_t vPrivLen,
 								  uint8_t *pubKey, size_t vPubLen) {
 
@@ -123,3 +123,8 @@ hybridCertificate *createTestCert(bool genCAKey,
 
 	return cert;
 }
+
+
+
+
+

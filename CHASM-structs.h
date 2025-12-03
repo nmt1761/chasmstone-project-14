@@ -21,6 +21,8 @@ typedef struct {
 
 
 typedef struct {
+	// vehicle id
+	uint8_t id[4];
 	// security headers
 	uint8_t securityHeaders;
 	// vehicle's ECDSA public key
