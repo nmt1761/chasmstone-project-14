@@ -51,29 +51,75 @@ Algorithm2CHASM:ReceivingandVerifyingSPDUs
 #include "crypto-handler.h"
 #include "falcon.h"
 #include <stdlib.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
 
 
-hybridCertificate *createTestCert() {
+hybridCertificate *createTestCert(bool genCAKey,
+								  uint8_t *privKey, size_t vPrivLen,
+								  uint8_t *pubKey, size_t vPubLen) {
+
+	// falcon 512
+	unsigned int logn = 9;
+
+	// buffer lengths
+	size_t privLen = FALCON_PRIVKEY_SIZE(logn);
+	size_t pubLen  = FALCON_PUBKEY_SIZE(logn);
+	size_t sigLen  = FALCON_SIG_PADDED_SIZE(logn);
+
+	// CA buffers
+	uint8_t CAPrivKey[privLen];
+	uint8_t CAPubKey[pubLen];
+	uint8_t CASig[sigLen];
+
+	if (genCAKey) {
+		printf("generating new CA keypair\n");
+
+		// generate a new CA keypair
+		key_gen(logn, false,
+				CAPrivKey, privLen,
+				CAPubKey, pubLen,
+				false);
+
+		// save the CA keypair
+		save_key("CA-pub",
+				CAPubKey,
+				pubLen);
+		save_key("CA-priv",
+				CAPubKey,
+				pubLen);
+
+	} else {
+		printf("loading CA keypair\n");
+
+		// load an existing CA keypair
+		load_key("CA-pub", CAPubKey,
+				&pubLen, sizeof(CAPubKey));
+		load_key("CA-pub", CAPrivKey,
+				&pubLen, sizeof(CAPrivKey));
+	}
+
+	printf("CA key set\n");
+
+	sign_message(logn, "test",
+					CASig, sigLen,
+					CAPrivKey, privLen,
+					CAPubKey, pubLen,
+					false);
+
+
+	// initialize certificate
 	hybridCertificate *cert = malloc(sizeof(hybridCertificate));
 
-	unsigned int logn = 9;
-	size_t priv_len = FALCON_PRIVKEY_SIZE(logn);
-	size_t pub_len  = FALCON_PUBKEY_SIZE(logn);
-	size_t sig_len  = FALCON_SIG_PADDED_SIZE(logn);
-	uint8_t privkey[FALCON_PRIVKEY_SIZE(logn)];
-	uint8_t pubkey[FALCON_PUBKEY_SIZE(logn)];
-
-	key_gen(logn, true,
-				privkey, priv_len,
-				pubkey, pub_len,
-				true);
-
+	// populate certificate
 	cert->securityHeaders = 0x00;
 	cert->ECDSAPublickey = NULL;
-	cert->PQCPublicKey = malloc(pub_len);
-	memcpy(cert->PQCPublicKey, pubkey, pub_len);
+	cert->PQCPublicKey = malloc(pubLen);
+	memcpy(cert->PQCPublicKey, CAPubKey, pubLen);
 	cert->ECDSASignatureCA = NULL;
-	cert->PQCSignatureCA = NULL;
+	cert->PQCSignatureCA = malloc(sigLen);
+	memcpy(cert->PQCSignatureCA, CASig, sigLen);
 
 	return cert;
 }

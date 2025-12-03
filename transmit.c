@@ -1,6 +1,6 @@
 #include <math.h>
 #include <crypto-handler.h>
-
+/*
 
 B = 1; // bandwidth from pre-configured C-V2X settings
 TC = 500; // certificate transmission interval in ms (default)

@@ -41,12 +41,51 @@ void test_fragments() {
 
 int main() {
 
+	printf("starting\n");
+	/* test the fragment structure*/
 	//test_fragments();
 
+
+	/* test the receiver */
+	// falcon 512
 	unsigned int logn = 9;
-	size_t pub_len  = FALCON_PUBKEY_SIZE(logn);
-	hybridCertificate *cert = createTestCert();
-	print_hex("Cert Public Key", cert->PQCPublicKey, pub_len);
+
+	// buffer lengths
+	size_t privLen = FALCON_PRIVKEY_SIZE(logn);
+	size_t pubLen  = FALCON_PUBKEY_SIZE(logn);
+	size_t sigLen  = FALCON_SIG_PADDED_SIZE(logn);
+
+	// key buffers
+	uint8_t privKey[privLen];
+	uint8_t pubKey[pubLen];
+
+	key_gen(logn, false,
+				privKey, privLen,
+				pubKey, pubLen,
+				false);
+
+	printf("after keypair\n");
+
+	printf("creating test cert\n");
+	hybridCertificate *cert = createTestCert(true,
+											 pubKey, pubLen,
+											 privKey, privLen);
+	printf("created test cert\n");
+
+	//print_hex("Cert Public Key", cert->PQCPublicKey, pubLen);
+	//print_hex("Cert Signature", cert->PQCSignatureCA, sigLen);
+
+	int res = verify_signature(logn, "test",
+					cert->PQCSignatureCA, sigLen,
+					cert->PQCPublicKey, pubLen,
+					false);
+
+	if (res == 0) {
+		printf("verifed cert using dummy text \"test\"\n");
+	}
+	else {
+		printf("verification failed");
+	}
 
 
 }
