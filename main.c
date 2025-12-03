@@ -38,13 +38,7 @@ void test_fragments() {
 	}
 }
 
-
-int main() {
-
-	printf("starting\n");
-	/* test the fragment structure*/
-	//test_fragments();
-
+void test_certificate() {
 	// vehicle id
 	uint8_t id[4] = {0x01,0x01,0x01,0x01};
 
@@ -78,23 +72,37 @@ int main() {
 	//print_hex("Cert Public Key", cert->PQCPublicKey, pubLen);
 	//print_hex("Cert Signature", cert->PQCSignatureCA, sigLen);
 
-	printf("received cert from vehicle: ");
+	/*printf("received cert from vehicle: ");
 	for (int i = 0; i < 4; i++) {
-	    printf("%02X", id[i]);
+		printf("%02X", cert->id[i]);
 	}
-	printf("\n");
+	printf("\n");*/
 
-	int res = verify_signature(logn, "test",
+	char certID[9];
+	for (int i = 0; i < 4; i++) {
+		snprintf(&certID[i * 2], 3, "%02X", cert->id[i]);
+	}
+	printf("received cert from vehicle: %s\n", certID);
+
+	int res = verify_signature(logn, certID,
 					cert->PQCSignatureCA, sigLen,
 					cert->PQCPublicKey, pubLen,
 					false);
 
 	if (res == 0) {
-		printf("verifed cert using dummy text \"test\"\n");
+		printf("verifed cert using vehicle id %s\n", certID);
 	}
 	else {
 		printf("verification failed");
 	}
+}
+
+int main() {
+
+	printf("starting\n");
+	//test_fragments();
+
+	test_certificate();
 
 
 }

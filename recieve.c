@@ -102,7 +102,13 @@ hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 
 	printf("CA key set\n");
 
-	sign_message(logn, "test",
+	char idStr[9];
+	for (int i = 0; i < 4; i++) {
+		snprintf(&idStr[i * 2], 3, "%02X", id[i]);
+	}
+
+	printf("signing id: %s\n", idStr);
+	sign_message(logn, idStr,
 					CASig, sigLen,
 					CAPrivKey, privLen,
 					CAPubKey, pubLen,
@@ -113,6 +119,7 @@ hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 	hybridCertificate *cert = malloc(sizeof(hybridCertificate));
 
 	// populate certificate
+	memcpy(cert->id, id, 4);
 	cert->securityHeaders = 0x00;
 	cert->ECDSAPublickey = NULL;
 	cert->PQCPublicKey = malloc(pubLen);
