@@ -134,8 +134,6 @@ hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 	cert->PQCSignatureCA = malloc(sigLen);
 	memcpy(cert->PQCSignatureCA, CASig, sigLen);
 
-	printf("result of verifying in test_cert funct: %d", res2);
-
 	return cert;
 }
 
