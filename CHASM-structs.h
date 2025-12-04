@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
+/*
 // retains a single fragment and its length
 typedef struct {
 	size_t fragmentLen;
@@ -16,7 +17,12 @@ typedef struct {
 	size_t fragmentCount;
 	fragment *fragments;
 } fragmentHolder;
-
+*/
+typedef struct fragment {
+	size_t fragmentLen;
+	char *fragmentString;
+	struct fragment *nextFragment;
+} fragment;
 /* example of how to use fragment structs is in main.c test_fragments() */
 
 
