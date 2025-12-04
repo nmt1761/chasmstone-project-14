@@ -2,7 +2,7 @@
 #include <crypto-handler.h>
 /*
 
-B = 1; // bandwidth from pre-configured C-V2X settings
+B = 20; // in mHz at QPSK 0.30, bandwidth from pre-configured C-V2X settings
 TC = 500; // certificate transmission interval in ms (default)
 TM = 100; // BSM interval in ms (default)
 HC = 1; // current certificate
