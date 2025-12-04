@@ -81,8 +81,8 @@ void test_certificate() {
 											 privKey, privLen);
 	printf("created test cert\n");
 
-	//print_hex("Cert Public Key", cert->PQCPublicKey, pubLen);
-	//print_hex("Cert Signature", cert->PQCSignatureCA, sigLen);
+	print_hex("Cert Public Key", cert->PQCPublicKey, pubLen);
+	print_hex("Cert Signature", cert->PQCSignatureCA, sigLen);
 
 	/*printf("received cert from vehicle: ");
 	for (int i = 0; i < 4; i++) {
@@ -105,7 +105,7 @@ void test_certificate() {
 		printf("verifed cert using vehicle id %s\n", certID);
 	}
 	else {
-		printf("verification failed");
+		printf("verification failed: %d\n", res);
 	}
 }
 
@@ -114,7 +114,7 @@ int main() {
 	printf("starting\n");
 	test_fragments();
 
-	//test_certificate();
+	test_certificate();
 
 	printf("done\n");
 }

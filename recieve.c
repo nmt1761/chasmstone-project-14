@@ -87,8 +87,8 @@ hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 				CAPubKey,
 				pubLen);
 		save_key("CA-priv",
-				CAPubKey,
-				pubLen);
+				CAPrivKey,
+				privLen);
 
 	} else {
 		printf("loading CA keypair\n");
@@ -96,8 +96,15 @@ hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 		// load an existing CA keypair
 		load_key("CA-pub", CAPubKey,
 				&pubLen, sizeof(CAPubKey));
-		load_key("CA-pub", CAPrivKey,
-				&pubLen, sizeof(CAPrivKey));
+		load_key("CA-priv", CAPrivKey,
+				&privLen, sizeof(CAPrivKey));
+
+		/*print_hex("Loaded public key",
+						CAPubKey,
+						pubLen);
+		print_hex("Loaded private key",
+						CAPrivKey,
+						privLen);*/
 	}
 
 	printf("CA key set\n");
@@ -114,6 +121,7 @@ hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 					CAPubKey, pubLen,
 					false);
 
+		printf("verifying before cert in test_cert funct: %d", res);
 
 	// initialize certificate
 	hybridCertificate *cert = malloc(sizeof(hybridCertificate));
@@ -128,10 +136,17 @@ hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 	cert->PQCSignatureCA = malloc(sigLen);
 	memcpy(cert->PQCSignatureCA, CASig, sigLen);
 
+	printf("result of verifying in test_cert funct: %d", res2);
+
 	return cert;
 }
 
 
+int processSPDU(SPDU *spdu, storedFragments storage) {
 
+
+
+	return 0;
+}
 
 
