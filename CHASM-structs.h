@@ -13,7 +13,7 @@ typedef struct fragment {
 } fragment;
 
 typedef struct fragmentHead {
-	uint8_t id;
+	uint8_t id[4];
 	fragment *headFragment;
 } fragmentHead;
 

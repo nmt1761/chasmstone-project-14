@@ -26,9 +26,15 @@ void test_fragments() {
 	frag2->nextFragment = frag3;
 	frag3->nextFragment = NULL;
 
-	fragment *curFrag = frag1;
-	fragment *nextFrag = NULL;
+	fragmentHead *fragHead = malloc(sizeof(fragmentHead));
+	uint8_t vehicleid[4] = {0x01,0x01,0x01,0x01};
+	memcpy(fragHead->id, vehicleid, 4);
+	fragHead->headFragment = frag1;
 
+	storedFragments *storage = malloc(sizeof(storedFragments));
+	storage->ids[0] = fragHead;
+	fragment *curFrag = storage->ids[0]->headFragment;
+	fragment *nextFrag = NULL;
 	do {
 		if (nextFrag != NULL) {
 			curFrag = nextFrag;
@@ -106,7 +112,7 @@ void test_certificate() {
 int main() {
 
 	printf("starting\n");
-	//test_fragments();
+	test_fragments();
 
 	//test_certificate();
 
