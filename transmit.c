@@ -1,19 +1,42 @@
 #include <math.h>
 #include "crypto-handler.h"
+#include "CHASM-structs.h"
+
 /*
 
-int B = 20; // in mHz at QPSK 0.30, bandwidth from pre-configured C-V2X settings
-int TC = 500; // certificate transmission interval in ms (default)
-int TM = 100; // BSM interval in ms (default)
-HC = 1; // current certificate
-HdrSec = 1; // IEEE 1609.2 security headers
-M = 1; // current BSM Message
-SigC = 1; // classic signature
-SigQR = 1; // quantum resistent signature
-int q = 2;     // q, r outlined in Section V table 1 of chasm paper (16-QAM, q = 4, r = 0.36)
+// in mHz at QPSK 0.30, bandwidth from pre-configured C-V2X settings
+int B = 20;
+
+// certificate transmission interval in ms (default)
+int TC = 500;
+
+// BSM interval in ms (default)
+int TM = 100;
+
+// current certificate
+hybridCertificate HC = 1;
+
+// IEEE 1609.2 security headers
+uint8_t HdrSec = 1;
+
+// current BSM Message
+BSMData M = 1;
+
+// classic signature
+uint8_t SigC = 1;
+
+// quantum resistent signature
+uint8_t SigQR = 1;
+
+// q, r outlined in Section V table 1 of chasm paper (16-QAM, q = 4, r = 0.36)
+int q = 2;
 float r = 0.66; // sourced from MCS (Modulation and Coding Scheme)
-int Nrb = 50; // can also be 100 number of Resource Blocks ? may depend on bandwidth
-HCid = 1; //authenticated certificate
+
+// can also be 100 number of Resource Blocks ? may depend on bandwidth
+int Nrb = 50;
+
+//authenticated certificate
+hybridCertificate HCid = 1;
 
 
   // FRAGMENT function will return a struct containg (number of certificate fragments, (an array of all fragments) )
@@ -33,10 +56,12 @@ HCid = 1; //authenticated certificate
     // number of certificate fragments
     nf = ceilingFunction(sizeof(HC)/(sizeof(maxHCf);
 
+	fragmentHolder fragHold;
+	fragment cF; // current Fragment
     // from here you divide HCid by nf in a way in which preserves the content/uses B (bandwidth) in some way?
 {HC1, ..., HCnf} = 0; 
     
-    return (nf, {HC1, ..., HCnf});
+    return fragHold; // (nf, {HC1, ..., HCnf})
   
 
 /*
