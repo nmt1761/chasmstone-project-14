@@ -2,17 +2,17 @@
 #include <crypto-handler.h>
 /*
 
-B = 20; // in mHz at QPSK 0.30, bandwidth from pre-configured C-V2X settings
-TC = 500; // certificate transmission interval in ms (default)
-TM = 100; // BSM interval in ms (default)
+int B = 20; // in mHz at QPSK 0.30, bandwidth from pre-configured C-V2X settings
+int TC = 500; // certificate transmission interval in ms (default)
+int TM = 100; // BSM interval in ms (default)
 HC = 1; // current certificate
 HdrSec = 1; // IEEE 1609.2 security headers
 M = 1; // current BSM Message
 SigC = 1; // classic signature
 SigQR = 1; // quantum resistent signature
-q = 2;     // q, r outlined in Section V table 1 of chasm paper (16-QAM, q = 4, r = 0.36)
-r = 0.66; // sourced from MCS (Modulation and Coding Scheme)
-Nrb = 50; // can also be 100 number of Resource Blocks ? may depend on bandwidth
+int q = 2;     // q, r outlined in Section V table 1 of chasm paper (16-QAM, q = 4, r = 0.36)
+float r = 0.66; // sourced from MCS (Modulation and Coding Scheme)
+int Nrb = 50; // can also be 100 number of Resource Blocks ? may depend on bandwidth
 HCid = 1; //authenticated certificate
 
 
