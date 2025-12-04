@@ -4,25 +4,23 @@
 #include <stdint.h>
 #include <stddef.h>
 
-/*
-// retains a single fragment and its length
-typedef struct {
-	size_t fragmentLen;
-	char *fragmentString;
-} fragment;
 
-
-// manages a set number of fragments
-typedef struct {
-	size_t fragmentCount;
-	fragment *fragments;
-} fragmentHolder;
-*/
+// retains a single fragment, its length, and the next fragment
 typedef struct fragment {
 	size_t fragmentLen;
 	char *fragmentString;
 	struct fragment *nextFragment;
 } fragment;
+
+typedef struct fragmentHead {
+	uint8_t id;
+	fragment *headFragment;
+} fragmentHead;
+
+typedef struct storedFragments {
+	size_t idCount;
+	fragmentHead *ids[];
+} storedFragments;
 /* example of how to use fragment structs is in main.c test_fragments() */
 
 
