@@ -121,8 +121,6 @@ hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 					CAPubKey, pubLen,
 					false);
 
-		printf("verifying before cert in test_cert funct: %d", res);
-
 	// initialize certificate
 	hybridCertificate *cert = malloc(sizeof(hybridCertificate));
 
