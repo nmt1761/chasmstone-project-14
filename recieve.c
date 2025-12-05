@@ -138,6 +138,32 @@ hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 }
 
 
+int verifyCert(int logn, hybridCertificate *cert,
+			   uint8_t *pubKey, size_t pubLen) {
+
+	size_t sigLen  = FALCON_SIG_PADDED_SIZE(logn);
+
+	char certID[9];
+	for (int i = 0; i < 4; i++) {
+		snprintf(&certID[i * 2], 3, "%02X", cert->id[i]);
+	}
+	printf("received cert from vehicle: %s\n", certID);
+
+	int res = verify_signature(logn, certID,
+					cert->PQCSignatureCA, sigLen,
+					cert->PQCPublicKey, pubLen,
+					false);
+
+	if (res == 0) {
+		printf("verifed cert using vehicle id %s\n", certID);
+	}
+	else {
+		printf("verification failed: %d\n", res);
+	}
+	return res;
+}
+
+
 int processSPDU(SPDU *spdu, storedFragments storage) {
 
 

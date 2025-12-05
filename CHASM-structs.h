@@ -48,7 +48,7 @@ typedef struct {
 	// certificate with vehicle's public keys
 	hybridCertificate *cert;
 	// BSM data
-	BSMData data;
+	BSMData *data;
 	// vechicle ECDSA signture of message
 	uint8_t *ECDSASignature;
 	// vehicle PQC signature of message
