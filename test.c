@@ -6,6 +6,7 @@
 #include "falcon.h"
 #include "crypto-handler.h"
 #include "receive.h"
+#include "transmit.h"
 
 
 
@@ -80,7 +81,8 @@ void test_certificate() {
 	printf("creating test cert\n");
 	hybridCertificate *cert = createTestCert(id, false,
 											 pubKey, pubLen,
-											 privKey, privLen);
+											 privKey, privLen,
+											 sigLen);
 	printf("created test cert\n");
 
 	print_hex("Cert Public Key", cert->PQCPublicKey, pubLen);
@@ -115,6 +117,7 @@ SPDU *createTestSPDU(unsigned int logn,
 				    uint8_t *privKey, size_t privLen,
 		  	  	    uint8_t *pubKey, size_t pubLen) {
 
+	size_t sigLen  = FALCON_SIG_PADDED_SIZE(logn);
 	uint8_t id[4] = {0x01,0x01,0x01,0x01};
 	char idStr[9];
 	for (int i = 0; i < 4; i++) {
@@ -123,9 +126,9 @@ SPDU *createTestSPDU(unsigned int logn,
 
 	hybridCertificate *cert = createTestCert(id, false,
 											 privKey, privLen,
-											 pubKey, pubLen);
+											 pubKey, pubLen,
+											 sigLen);
 
-	size_t sigLen  = FALCON_SIG_PADDED_SIZE(logn);
 	uint8_t vehicleSig[sigLen];
 	sign_message(logn, idStr,
 						vehicleSig, sigLen,
@@ -190,6 +193,43 @@ void test_receive_random_frags() {
 
 void test_receive() {
 
+}
+
+
+
+void test_serialize_certificate() {
+
+
+	// vehicle id
+	uint8_t id[4] = {0x01,0x01,0x01,0x01};
+
+
+	/* test the receiver */
+	// falcon 512
+	unsigned int logn = 9;
+
+	// buffer lengths
+	size_t privLen = FALCON_PRIVKEY_SIZE(logn);
+	size_t pubLen  = FALCON_PUBKEY_SIZE(logn);
+	size_t sigLen  = FALCON_SIG_PADDED_SIZE(logn);
+
+	// key buffers
+	uint8_t privKey[privLen];
+	uint8_t pubKey[pubLen];
+
+	key_gen(logn, false,
+				privKey, privLen,
+				pubKey, pubLen,
+				false);
+
+	hybridCertificate *cert = createTestCert(id, true,
+				privKey, privLen,
+				pubKey, pubLen,
+				sigLen);
+
+	print_hex("ecdsa pub", cert->ECDSAPublickey, ECDSA_PUBLIC_KEY_SIZE);
+
+	serializeCertificate(cert);
 }
 
 

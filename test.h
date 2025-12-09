@@ -13,5 +13,7 @@ void test_receive_random_frags();
 
 void test_receive();
 
+void test_serialize_certificate();
+
 
 #endif /* TEST_H_ */

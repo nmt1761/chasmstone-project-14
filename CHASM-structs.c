@@ -9,6 +9,88 @@
 #include "test.h"
 
 
+
+hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
+								  uint8_t *privKey, size_t privLen,
+								  uint8_t *pubKey, size_t pubLen,
+								  size_t sigLen) {
+
+	// falcon 512
+	unsigned int logn = 9;
+
+	// CA buffers
+	uint8_t CAPrivKey[privLen];
+	uint8_t CAPubKey[pubLen];
+	uint8_t CASig[sigLen];
+
+	if (genCAKey) {
+		printf("generating new CA keypair\n");
+
+		// generate a new CA keypair
+		key_gen(logn, false,
+				CAPrivKey, privLen,
+				CAPubKey, pubLen,
+				false);
+
+		// save the CA keypair
+		save_key("CA-pub",
+				CAPubKey,
+				pubLen);
+		save_key("CA-priv",
+				CAPrivKey,
+				privLen);
+
+	} else {
+		printf("loading CA keypair\n");
+
+		// load an existing CA keypair
+		load_key("CA-pub", CAPubKey,
+				&pubLen, sizeof(CAPubKey));
+		load_key("CA-priv", CAPrivKey,
+				&privLen, sizeof(CAPrivKey));
+
+		print_hex("Loaded public key",
+						CAPubKey,
+						pubLen);
+		print_hex("Loaded private key",
+						CAPrivKey,
+						privLen);
+	}
+
+	printf("CA key set\n");
+
+	char idStr[9];
+	for (int i = 0; i < 4; i++) {
+		snprintf(&idStr[i * 2], 3, "%02X", id[i]);
+	}
+
+	printf("signing id: %s\n", idStr);
+	sign_message(logn, idStr,
+					CASig, sigLen,
+					CAPrivKey, privLen,
+					CAPubKey, pubLen,
+					false);
+
+	// initialize certificate
+	hybridCertificate *cert = malloc(sizeof(hybridCertificate));
+
+	// populate certificate
+	memcpy(cert->id, id, 4);
+	cert->securityHeaders = 0xAA;
+	cert->ECDSAPublickey = malloc(ECDSA_PUBLIC_KEY_SIZE);
+	memset(cert->ECDSAPublickey, 0x88, ECDSA_PUBLIC_KEY_SIZE);
+	cert->PQCPublicKey = malloc(pubLen);
+	memcpy(cert->PQCPublicKey, CAPubKey, pubLen);
+	cert->ECDSASignatureCA = malloc(ECDSA_SIG_SIZE);
+	memset(cert->ECDSASignatureCA, 0x99, ECDSA_SIG_SIZE);
+	cert->PQCSignatureCA = malloc(sigLen);
+	memcpy(cert->PQCSignatureCA, CASig, sigLen);
+
+	return cert;
+}
+
+
+
 void printHead(fragmentHead *fragHead) {
 	fragment *curFrag = fragHead->headFragment;
 	fragment *nextFrag = NULL;

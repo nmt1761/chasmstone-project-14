@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <stdbool.h>
 
 
 #define VEHICLE_ID_SIZE							4
@@ -42,6 +43,7 @@ int addFragToStorage(uint8_t *id,
 
 void printHead(fragmentHead *head);
 
+
 typedef struct {
 	// vehicle id
 	uint8_t id[4];
@@ -77,6 +79,10 @@ hybridCertificate *processCompleteCert(int id, storedFragments *storage);
 
 int populateCertFromString(hybridCertificate *cert, unsigned char *fragmentBytes);
 
+hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
+								  uint8_t *privkey, size_t priv_len,
+								  uint8_t *pubkey, size_t pub_len,
+								  size_t sigLen);
 
 
 #endif /* CHASM_STRUCTS_H_ */

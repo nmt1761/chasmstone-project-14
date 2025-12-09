@@ -5,12 +5,33 @@
 #include "CHASM-structs.h"
 
 
-  char* serializeCertificate(hybridCertificate HCid){
+char *serializeCertificate(hybridCertificate *HCid) {
 	  // turning a struct hybridCertificate into one long string of hex values for our fragmentation protocol to digest
-	  char serializedHC[COMPLETE_HYBRID_CERT_FRAGMENT_SIZE];
+	  unsigned char serializedHC[COMPLETE_HYBRID_CERT_FRAGMENT_SIZE];
 
-	  return 0;
-  }
+	  int curIndex = 0;
+
+	  memcpy(serializedHC, HCid->id, 4);
+	  curIndex += VEHICLE_ID_SIZE;
+
+	  serializedHC[curIndex] = (unsigned char)HCid->securityHeaders;
+	  curIndex += SECURITY_HEADERS_SIZE;
+
+	  memcpy(serializedHC + curIndex, HCid->ECDSAPublickey, ECDSA_PUBLIC_KEY_SIZE);
+	  curIndex += ECDSA_PUBLIC_KEY_SIZE;
+
+	  memcpy(serializedHC + curIndex, HCid->PQCPublicKey, PQC_PUBLIC_KEY_SIZE);
+	  curIndex += PQC_PUBLIC_KEY_SIZE;
+
+	  memcpy(serializedHC + curIndex, HCid->ECDSASignatureCA, ECDSA_SIG_SIZE);
+	  curIndex += ECDSA_SIG_SIZE;
+
+	  memcpy(serializedHC + curIndex, HCid->PQCSignatureCA, PQC_SIG_SIZE);
+	  curIndex += PQC_SIG_SIZE;
+
+
+	  return serializedHC;
+}
 
   // FRAGMENT function will return storedFragments struct containing (number of certificate fragments, (an array of all fragments) )
   storedFragments FRAGMENT(hybridCertificate *HCid, int q, float r, int B, int Nrb, BSMData M) {

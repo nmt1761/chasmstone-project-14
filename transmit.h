@@ -5,11 +5,16 @@
  * Date 12/04/2025
  */
 
+#include "CHASM-structs.h"
+
 #ifndef TRANSMIT_H_
 #define TRANSMIT_H_
 
-char serializeCertificate(hybridCertificate HCid);
+
+char *serializeCertificate(hybridCertificate *HCid);
 
 storedFragments FRAGMENT(hybridCertificate HCid, int q, float r, int B, int Nrb);
 
 int transmit(hybridCertificate HCid);
+
+#endif
