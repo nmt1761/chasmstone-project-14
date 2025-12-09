@@ -9,12 +9,12 @@
 	return 0
   }
 
-  // FRAGMENT function will return a struct containing (number of certificate fragments, (an array of all fragments) )
-  // \/ int is a placeholder
+  // FRAGMENT function will return storedFragments struct containing (number of certificate fragments, (an array of all fragments) )
   storedFragments FRAGMENT(HCid, q, r, B, Nrb) {
     
     // Calculating some variables needed for fragmentation function
-    // minimum size of an SPDU
+
+	// minimum size of an SPDU
     float minS = sizeof(HCid.securityHeaders) + sizeof(S.data) + sizeof(HCid->ECDSASignatureCA) + sizeof(HCid->PQCSignatureCA);
     
     // maximum size of transport block given our MCS 
