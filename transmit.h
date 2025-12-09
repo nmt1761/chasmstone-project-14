@@ -13,7 +13,7 @@
 
 char *serializeCertificate(hybridCertificate *HCid);
 
-storedFragments FRAGMENT(hybridCertificate HCid, int q, float r, int B, int Nrb);
+storedFragments FRAGMENT(hybridCertificate HCid, int q, float r, int B, int Nrb, BSMData M);
 
 int transmit(hybridCertificate HCid);
 
