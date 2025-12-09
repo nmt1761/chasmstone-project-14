@@ -145,38 +145,49 @@ SPDU *createTestSPDU(unsigned int logn,
 }
 
 
-void test_receive() {
+void test_receive_random_frags() {
 
-	/* create fabricated spdu to use to test receive */
-	// falcon 512
-	unsigned int logn = 9;
-
-	// buffer lengths
-	size_t privLen = FALCON_PRIVKEY_SIZE(logn);
-	size_t pubLen  = FALCON_PUBKEY_SIZE(logn);
-
-
-	// key buffers
-	uint8_t privKey[privLen];
-	uint8_t pubKey[pubLen];
-
-	key_gen(logn, false,
-				  privKey, privLen,
-				  pubKey, pubLen,
-				  false);
-
-	SPDU *spdu = createTestSPDU(logn,
-							    privKey, privLen,
-							    pubKey, pubLen);
-
-	/* receiving logic */
-	hybridCertificate *cert = spdu->cert;
-	int res = verifyCert(logn, cert,
-			   	   	     pubKey, pubLen);
-
-	if (res != 0) {
-		printf("verification failed failed: %d", res);
-		return;
+	uint8_t id[4] = {0x01,0x01,0x01,0x01};
+	char idStr[9];
+	for (int i = 0; i < 4; i++) {
+		snprintf(&idStr[i * 2], 3, "%02X", id[i]);
 	}
 
+	size_t maxFragments = 10;
+	storedFragments *storage = malloc(sizeof(storedFragments) + sizeof(fragmentHead *) * maxFragments);
+	for (size_t i = 0; i < maxFragments; i++) {
+	    storage->ids[i] = NULL;
+	}
+	storage->idCount = 0;
+
+	unsigned int strNumVal;
+	for (unsigned int i = 1; i < 950; i++) {
+		printf("\nloop %d\n", i);
+		fragment *newFrag = malloc(sizeof(fragment));
+		newFrag->fragmentString = malloc(3);
+		strNumVal = (i % 256);
+		if (strNumVal == 0) {
+			strNumVal++;
+		}
+		newFrag->fragmentString[0] = (unsigned char)strNumVal;
+		newFrag->fragmentString[1] = (unsigned char)strNumVal;
+		newFrag->fragmentString[2] = '\0';
+		newFrag->fragmentLen = strlen(newFrag->fragmentString);
+		newFrag->nextFragment = NULL;
+
+		addFragToStorage(id, storage, newFrag);
+
+//		printf("frag added\n");
+	}
+
+	//printHead(storage->ids[0]);
 }
+
+
+
+
+void test_receive() {
+
+}
+
+

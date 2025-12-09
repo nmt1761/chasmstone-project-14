@@ -15,8 +15,8 @@ int main() {
 
 	//test_fragments();
 	//test_certificate();
-
-	test_receive();
+	test_receive_random_frags();
+	//void test_receive();
 
 	printf("done\n");
 }

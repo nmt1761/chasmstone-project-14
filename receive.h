@@ -16,7 +16,7 @@ int verifyCert(int logn, hybridCertificate *cert,
 			   uint8_t *pubkey, size_t pub_len);
 
 
-int processSPDU(SPDU *spdu);
+int processFragment(fragment frag, storedFragments storage);
 
 #endif /* RECEIVE_H_ */
 

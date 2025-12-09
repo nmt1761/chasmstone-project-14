@@ -5,6 +5,14 @@
 #include <stddef.h>
 
 
+#define VEHICLE_ID_SIZE							4
+#define SECURITY_HEADERS_SIZE					1
+#define ECDSA_PUBLIC_KEY_SIZE					256
+#define PQC_PUBLIC_KEY_SIZE						897
+#define ECDSA_SIG_SIZE							64
+#define PQC_SIG_SIZE							666
+#define COMPLETE_HYBRID_CERT_FRAGMENT_SIZE		VEHICLE_ID_SIZE + SECURITY_HEADERS_SIZE + ECDSA_PUBLIC_KEY_SIZE + PQC_PUBLIC_KEY_SIZE + ECDSA_SIG_SIZE + PQC_SIG_SIZE
+
 // retains a single fragment, its length, and the next fragment
 typedef struct fragment {
 	size_t fragmentLen;
@@ -22,6 +30,19 @@ typedef struct storedFragments {
 	fragmentHead *ids[];
 } storedFragments;
 /* example of how to use fragment structs is in main.c test_fragments() */
+
+int addFragToHead(fragment *newFrag, fragmentHead *head);
+
+int idInFragmentStorage(uint8_t *id,
+						storedFragments *storage);
+
+int addFragToStorage(uint8_t *id,
+					storedFragments *storage,
+					fragment *frag);
+
+void printHead(fragmentHead *head);
+
+int processCompleteCert(int id, storedFragments *storage);
 
 
 typedef struct {

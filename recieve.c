@@ -164,9 +164,13 @@ int verifyCert(int logn, hybridCertificate *cert,
 }
 
 
-int processSPDU(SPDU *spdu, storedFragments storage) {
+int processFragment(uint8_t *id, fragment frag, storedFragments *storage) {
 
+	int res;
 
+	res = idInFragmentStorage(id, storage);
+
+	printf("id in storage: %d", res);
 
 	return 0;
 }
