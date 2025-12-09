@@ -13,37 +13,69 @@
   }
 
   // FRAGMENT function will return storedFragments struct containing (number of certificate fragments, (an array of all fragments) )
-  storedFragments FRAGMENT(hybridCertificate *HCid, int q, float r, int B, int Nrb) {
+  storedFragments FRAGMENT(hybridCertificate *HCid, int q, float r, int B, int Nrb, BSMData M) {
     
     // Calculating some variables needed for fragmentation function
 
 	// minimum size of an SPDU
     //float minS = sizeof(HCid.securityHeaders) + sizeof(S.data) + sizeof(HCid->ECDSASignatureCA) + sizeof(HCid->PQCSignatureCA);
-    float minS = SECURITY_HEADERS_SIZE + ECDSA_SIG_SIZE + PQC_SIG_SIZE;
+    size_t minS = SECURITY_HEADERS_SIZE + strlen(M) + ECDSA_SIG_SIZE + PQC_SIG_SIZE;
     
     // maximum size of transport block given our MCS 
     //float maxTB  = 12 * 10 * log2(q) * r * (Nrb - 2) * (1.0 / 8.0);
     float bitsPerSymbol = log2f(q);
     float rb = (float)(Nrb - 2);
     float bits = 12.0f * 10.0f * bitsPerSymbol * r * rb;
-    float maxTB = bits / 8.0f;
+    size_t maxTB = bits / 8.0f;
 
   
     // maxmimum size of HCf (certificate fragment)
     //float maxHCf = sizeof(maxTB) - sizeof(minS); //possibly check if double sizeof causes error
-    float maxHCF = maxTB - minS;
+    size_t maxHCF = maxTB - minS;
     // number of certificate fragments
-    int nf = (int)ceilf( COMPLETE_HYBRID_CERT_FRAGMENT_SIZE / maxHCF );  // uses ceiling function
-    printf(nf);
+    int nf = (int)ceilf( COMPLETE_HYBRID_CERT_FRAGMENT_SIZE / maxHCF );  // uses ceiling function, possibly change to (certLength + maxHCF - 1) / maxHCF
+    printf("%d\n", nf);
 
-    char* serializedHC = serializeCertificate(HCid);
+    char* serializedHC = serializeCertificate(HCid); //double check validity
+    fragmentHead *head = malloc(sizeof(fragmentHead));		//fragment head initialized
+    memcpy(head->id, HCid->id, 4);
+    head->headFragment = malloc(sizeof(fragment));
+    head->headFragment->fragmentString = malloc(maxHCF);	//headfragment value complete
 
-    for(int i = 0; i < nf; i++){
+    head->headFragment->nextFragment = malloc(sizeof(fragment));	//allocated memory for next fragment
+    head->headFragment->nextFragment = NULL;
 
+
+    fragment *prev = NULL;
+    size_t offset = 0;	//length of certificate currently fragmented
+    size_t certLength = COMPLETE_HYBRID_CERT_FRAGMENT_SIZE;	//length of serialized certificate
+
+    while (offset < certLength){
+			size_t chunk = certLength - offset;		//length of certificate left to fragment
+			if (chunk > maxHCF) {		//if certificate is not done, chunk equals the amount of data we want to fragment
+				chunk = maxHCF;
+			}
+
+			fragment *frag = malloc(sizeof(fragment));
+			frag->fragmentLen = chunk;
+			frag->fragmentString = malloc(chunk);
+			memcpy(frag->fragmentString, serializedHC + offset, chunk);
+			frag->nextFragment = NULL;
+			/*
+			if head->headFragment == NULL) {
+				head->Fragment = frag;
+			} else {
+				prev->nextFragment = frag;
+			}
+			*/
+			prev = frag;
+			offset += chunk;
+    	}
+
+    	return head;
     }
 
 
-	fragment cF; // current Fragment
     // from here you divide HCid by nf in a way in which preserves the content/uses B (bandwidth) in some way?
 	//{HC1, ..., HCnf} = 0;
 	storedFragments fragments;
@@ -93,7 +125,7 @@
 		BSMData *M = malloc(sizeof(S->data));
 
 
-		storedFragments fragments = FRAGMENT(HCid, q, r, B, Nrb);
+		storedFragments fragments = FRAGMENT(HCid, q, r, B, Nrb, M);
 	/*
 		  while HCid (the current certificate) is active do:
 		  select q (modulation order) and r (code rate) values (sourced from MCS to be used)
