@@ -88,15 +88,19 @@ int addFragToHead(fragment *newFrag, fragmentHead *head) {
 		nextFrag = curFrag->nextFragment;
 		countFrag++;
 	}
-	if (fragLen == COMPLETE_HYBRID_CERT_FRAGMENT_SIZE - (int)newFrag->fragmentLen) {
+	printf("done iterating frags\n");
+	//(int)newFrag->fragmentLen
+	printf("fraglen %d", fragLen);
+	if (fragLen >= COMPLETE_HYBRID_CERT_FRAGMENT_SIZE - 1) {
 		fullFragment = true;
 	}
+	printf("fraglen %d\n", fragLen);
 	curFrag->nextFragment = newFrag;
 
 //	printf("end of addFragToHead\n");
 	if (fullFragment) {
+		printf("fullFragment\n");
 		fragLen += (int)newFrag->fragmentLen;
-		printf("finished fragment grouping: %d\n", fragLen);
 		return 1;
 	}
 	return 0;
@@ -104,7 +108,6 @@ int addFragToHead(fragment *newFrag, fragmentHead *head) {
 
 
 int addFragToStorage(uint8_t *id, storedFragments *storage, fragment *frag) {
-	printf("\n");
 	int idIndex = idInFragmentStorage(id, storage);
 	fragmentHead *head;
 	if (idIndex == -1) {
@@ -127,7 +130,10 @@ int addFragToStorage(uint8_t *id, storedFragments *storage, fragment *frag) {
 		int res = addFragToHead(frag, head);
 //		printf("made it past addtohead\n");
 		if (res == 1) {
-			processCompleteCert(idIndex, storage);
+			hybridCertificate *cert = processCompleteCert(idIndex, storage);
+			printf("got cert\n");
+			print_hex("ECDSA pub key", cert->ECDSAPublickey, ECDSA_PUBLIC_KEY_SIZE);
+			print_hex("PQC pub key", cert->PQCPublicKey, PQC_PUBLIC_KEY_SIZE);
 		}
 	}
 
@@ -135,43 +141,98 @@ int addFragToStorage(uint8_t *id, storedFragments *storage, fragment *frag) {
 }
 
 
-int processCompleteCert(int id, storedFragments *storage) {
+int populateCertFromString(hybridCertificate *cert, unsigned char *fragmentBytes) {
+	int curIndex = 0;
+	memcpy(cert->id, fragmentBytes + curIndex, VEHICLE_ID_SIZE);
+	curIndex += VEHICLE_ID_SIZE;
 
-	unsigned char certStr[COMPLETE_HYBRID_CERT_FRAGMENT_SIZE+3];
+	cert->securityHeaders = fragmentBytes[curIndex];
+	curIndex += SECURITY_HEADERS_SIZE;
+
+	cert->ECDSAPublickey = malloc(ECDSA_PUBLIC_KEY_SIZE);
+	memcpy(cert->ECDSAPublickey, fragmentBytes + curIndex, ECDSA_PUBLIC_KEY_SIZE);
+	curIndex += ECDSA_PUBLIC_KEY_SIZE;
+
+	cert->PQCPublicKey = malloc(PQC_PUBLIC_KEY_SIZE);
+	memcpy(cert->PQCPublicKey, fragmentBytes + curIndex, PQC_PUBLIC_KEY_SIZE);
+	curIndex += PQC_PUBLIC_KEY_SIZE;
+
+	cert->ECDSASignatureCA = malloc(ECDSA_SIG_SIZE);
+	memcpy(cert->ECDSASignatureCA, fragmentBytes + curIndex, ECDSA_SIG_SIZE);
+	curIndex += ECDSA_SIG_SIZE;
+
+	cert->PQCSignatureCA = malloc(PQC_SIG_SIZE);
+	memcpy(cert->PQCSignatureCA, fragmentBytes + curIndex, PQC_SIG_SIZE);
+	curIndex += PQC_SIG_SIZE;
+
+	printf("hit return\n");
+	return 0;
+}
+
+
+hybridCertificate *processCompleteCert(int id, storedFragments *storage) {
+
+	printf("processCompleteCert start\n");
+	unsigned char certStr[COMPLETE_HYBRID_CERT_FRAGMENT_SIZE+4];
 	int curIndex = 0;
 	fragmentHead *fragHead = storage->ids[id];
 	fragment *curFrag = fragHead->headFragment;
-		fragment *nextFrag = NULL;
-		printf("\n\nstarting frag reading\n");
-		do {
-			if (nextFrag != NULL) {
-				curFrag = nextFrag;
-			}
-			if (curFrag->fragmentString == NULL) {
-				printf("fragment has no string\n");
-				return -1;
-			}
-			for (int i = 0; i < curFrag->fragmentLen; i++) {
-				printf("%d\n", curIndex);
-				if (curIndex + 2 > COMPLETE_HYBRID_CERT_FRAGMENT_SIZE+3) {
-					printf("ERROR\n");
-					break;
+	fragment *nextFrag = NULL;
+	printf("\n\nstarting frag reading\n");
+	int fragCount = 0;
+	do {
+		if (nextFrag != NULL) {
+			curFrag = nextFrag;
+		}
+		if (curFrag->fragmentString == NULL) {
+			printf("fragment has no string\n");
+			return -1;
+		}
+		printf("if statement: %d + %d + 1\n", curIndex,curFrag->fragmentLen);
+		if (curIndex + curFrag->fragmentLen > COMPLETE_HYBRID_CERT_FRAGMENT_SIZE+1) {
+			printf("ERROR\n");
+			break;
+		}
+		for (int i = 0; i < curFrag->fragmentLen; i++) {
+
+			//printf("%02X ", (unsigned char)curFrag->fragmentString[i]);
+			memcpy((unsigned char *)certStr + curIndex,
+					&curFrag->fragmentString[i],
+					1);
+			//printf("frag: %d; index: %d; adding: %02X; len %d\n", fragCount, i, certStr[curIndex], curIndex);
+			/*if (curIndex != 30) {
+				for (int i = 0; i < strlen((char *)certStr); i++) {
+					printf("%02X", certStr[i]);
 				}
-				//printf("%02X ", (unsigned char)curFrag->fragmentString[i]);
-				memcpy((unsigned char *)certStr + curIndex,
-						&curFrag->fragmentString[i],
-						1);
-				curIndex += 1;
-			}
-
-			nextFrag = curFrag->nextFragment;
+				printf("\n");
+			}*/
+			curIndex += 1;
 		}
-		while (curFrag->nextFragment != NULL);
+		certStr[curIndex+1] = '\0';
+		nextFrag = curFrag->nextFragment;
+		fragCount++;
+	}
+	while (curFrag->nextFragment != NULL);
 
-		for (int i = 0; i < strlen(certStr); i++) {
-			printf("%02X\n", certStr[i]);
+	printf("(0):");
+	for (int i = 0; i < strlen(certStr); i++) {
+		printf("%02X ", certStr[i]);
+		if ((i + 1) % 32 == 0) {
+			printf("\n(%d): ", i);
 		}
+	}
+	printf("\n");
 
+	printf("strlen: %d\n", strlen(certStr));
 
-	return 0;
+	storage->ids[id] = NULL;
+	storage->idCount -= 1;
+
+	printf("made it\n");
+	hybridCertificate *assembledCert = malloc(sizeof(hybridCertificate));
+	printf("after malloc\n");
+	populateCertFromString(assembledCert, certStr);
+	printf("returning\n");
+
+	return assembledCert;
 }

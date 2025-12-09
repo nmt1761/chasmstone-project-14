@@ -44,7 +44,7 @@ void test_fragments() {
 		for (int i = 0; i < curFrag->fragmentLen; i++) {
 			printf("%02X ", curFrag->fragmentString[i]);
 			}
-		printf("\n");
+		//printf("\n");
 
 		 nextFrag = curFrag->nextFragment;
 	}
@@ -161,18 +161,20 @@ void test_receive_random_frags() {
 	storage->idCount = 0;
 
 	unsigned int strNumVal;
-	for (unsigned int i = 1; i < 950; i++) {
-		printf("\nloop %d\n", i);
+	for (unsigned int i = 1; i < 476; i++) {
+		//printf("\nloop %d\n", i);
 		fragment *newFrag = malloc(sizeof(fragment));
-		newFrag->fragmentString = malloc(3);
+		newFrag->fragmentString = malloc(5);
 		strNumVal = (i % 256);
 		if (strNumVal == 0) {
 			strNumVal++;
 		}
 		newFrag->fragmentString[0] = (unsigned char)strNumVal;
 		newFrag->fragmentString[1] = (unsigned char)strNumVal;
-		newFrag->fragmentString[2] = '\0';
-		newFrag->fragmentLen = strlen(newFrag->fragmentString);
+		newFrag->fragmentString[2] = (unsigned char)strNumVal;
+		newFrag->fragmentString[3] = (unsigned char)strNumVal;
+		newFrag->fragmentString[4] = '\0';
+		newFrag->fragmentLen = 4;
 		newFrag->nextFragment = NULL;
 
 		addFragToStorage(id, storage, newFrag);

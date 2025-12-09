@@ -42,9 +42,6 @@ int addFragToStorage(uint8_t *id,
 
 void printHead(fragmentHead *head);
 
-int processCompleteCert(int id, storedFragments *storage);
-
-
 typedef struct {
 	// vehicle id
 	uint8_t id[4];
@@ -75,6 +72,10 @@ typedef struct {
 	// vehicle PQC signature of message
 	uint8_t *PQCSignature;
 } SPDU;
+
+hybridCertificate *processCompleteCert(int id, storedFragments *storage);
+
+int populateCertFromString(hybridCertificate *cert, unsigned char *fragmentBytes);
 
 
 
