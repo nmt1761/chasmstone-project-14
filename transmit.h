@@ -8,7 +8,7 @@
 #ifndef TRANSMIT_H_
 #define TRANSMIT_H_
 
-char listifyHC(hybridCertificate HCid);
+char serializeCertificate(hybridCertificate HCid);
 
 storedFragments FRAGMENT(hybridCertificate HCid, int q, float r, int B, int Nrb);
 

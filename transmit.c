@@ -1,42 +1,57 @@
 #include <math.h>
+#include <stdio.h>
+#include <string.h>
 #include "crypto-handler.h"
 #include "CHASM-structs.h"
 
 
-
-  char listifyHC(hybridCertificate HCid){
+  char* serializeCertificate(hybridCertificate HCid){
 	  // turning a struct hybridCertificate into one long string of hex values for our fragmentation protocol to digest
-	return 0;
+	  char serializedHC[COMPLETE_HYBRID_CERT_FRAGMENT_SIZE];
+
+	  return 0;
   }
 
   // FRAGMENT function will return storedFragments struct containing (number of certificate fragments, (an array of all fragments) )
-  storedFragments FRAGMENT(hybridCertificate HCid, int q, float r, int B, int Nrb) {
+  storedFragments FRAGMENT(hybridCertificate *HCid, int q, float r, int B, int Nrb) {
     
     // Calculating some variables needed for fragmentation function
 
 	// minimum size of an SPDU
-    float minS = sizeof(HCid.securityHeaders) + sizeof(S.data) + sizeof(HCid->ECDSASignatureCA) + sizeof(HCid->PQCSignatureCA);
+    //float minS = sizeof(HCid.securityHeaders) + sizeof(S.data) + sizeof(HCid->ECDSASignatureCA) + sizeof(HCid->PQCSignatureCA);
+    float minS = SECURITY_HEADERS_SIZE + ECDSA_SIG_SIZE + PQC_SIG_SIZE;
     
     // maximum size of transport block given our MCS 
-    float maxTB  = 12 * 10 * log2(q) * r * (Nrb - 2) * 1/8;
+    //float maxTB  = 12 * 10 * log2(q) * r * (Nrb - 2) * (1.0 / 8.0);
+    float bitsPerSymbol = log2f(q);
+    float rb = (float)(Nrb - 2);
+    float bits = 12.0f * 10.0f * bitsPerSymbol * r * rb;
+    float maxTB = bits / 8.0f;
+
   
     // maxmimum size of HCf (certificate fragment)
-    float maxHCf = sizeof(maxTB) - sizeof(minS); //possibly check if double sizeof causes error
-  
+    //float maxHCf = sizeof(maxTB) - sizeof(minS); //possibly check if double sizeof causes error
+    float maxHCF = maxTB - minS;
     // number of certificate fragments
-    double nf = ceil( sizeof(HCid) / sizeof(maxHCf) );  // uses ceiling function
+    int nf = (int)ceilf( COMPLETE_HYBRID_CERT_FRAGMENT_SIZE / maxHCF );  // uses ceiling function
+    printf(nf);
 
-    char longAhString[] = listifyHC(HCid);
+    char* serializedHC = serializeCertificate(HCid);
+
+    for(int i = 0; i < nf; i++){
+
+    }
+
 
 	fragment cF; // current Fragment
     // from here you divide HCid by nf in a way in which preserves the content/uses B (bandwidth) in some way?
-	{HC1, ..., HCnf} = 0;
-	storedFragments fragments = 1;
+	//{HC1, ..., HCnf} = 0;
+	storedFragments fragments;
     
     return fragments; // (nf, {HC1, ..., HCnf}) <- maybe no nf
   }
   
-	int transmit(SPDU S) {
+	int transmit(SPDU *S) {
 
 
 				// in mHz at QPSK 0.30, bandwidth from pre-configured C-V2X settings
@@ -66,7 +81,8 @@
 
 		//current certificate
 		hybridCertificate *HCid = malloc(sizeof(hybridCertificate));
-		HCid->id = {0x01,0x01,0x01,0x01};
+		uint8_t id_bytes[4] = {0x01,0x01,0x01,0x01};
+		memcpy(HCid->id, id_bytes, 4);
 		HCid->securityHeaders = NULL;
 		HCid->ECDSAPublickey = NULL;
 		HCid->PQCPublicKey = NULL;
