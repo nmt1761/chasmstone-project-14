@@ -11,10 +11,14 @@
 #define TRANSMIT_H_
 
 
-char *serializeCertificate(hybridCertificate *HCid);
+unsigned char *serializeCertificate(hybridCertificate *HCid);
 
-storedFragments FRAGMENT(hybridCertificate HCid, int q, float r, int B, int Nrb, BSMData M);
+SPDU *createSPDU(unsigned int logn,
+				    uint8_t *privKey, size_t privLen,
+		  	  	    uint8_t *pubKey, size_t pubLen);
 
-int transmit(hybridCertificate HCid);
+fragmentHead *FRAGMENT(hybridCertificate HCid, int q, float r, int B, int Nrb, BSMData *M);
+
+int transmit();
 
 #endif

@@ -24,7 +24,7 @@ hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 	uint8_t CASig[sigLen];
 
 	if (genCAKey) {
-		printf("generating new CA keypair\n");
+		//printf("generating new CA keypair\n");
 
 		// generate a new CA keypair
 		key_gen(logn, false,
@@ -41,7 +41,7 @@ hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 				privLen);
 
 	} else {
-		printf("loading CA keypair\n");
+		//printf("loading CA keypair\n");
 
 		// load an existing CA keypair
 		load_key("CA-pub", CAPubKey,
@@ -49,22 +49,22 @@ hybridCertificate *createTestCert(uint8_t *id, bool genCAKey,
 		load_key("CA-priv", CAPrivKey,
 				&privLen, sizeof(CAPrivKey));
 
-		print_hex("Loaded public key",
+		/*print_hex("Loaded public key",
 						CAPubKey,
 						pubLen);
 		print_hex("Loaded private key",
 						CAPrivKey,
-						privLen);
+						privLen);*/
 	}
 
-	printf("CA key set\n");
+	//printf("CA key set\n");
 
 	char idStr[9];
 	for (int i = 0; i < 4; i++) {
 		snprintf(&idStr[i * 2], 3, "%02X", id[i]);
 	}
 
-	printf("signing id: %s\n", idStr);
+	//printf("signing id: %s\n", idStr);
 	sign_message(logn, idStr,
 					CASig, sigLen,
 					CAPrivKey, privLen,

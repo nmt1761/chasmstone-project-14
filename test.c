@@ -113,40 +113,6 @@ void test_certificate() {
 	}
 }
 
-SPDU *createTestSPDU(unsigned int logn,
-				    uint8_t *privKey, size_t privLen,
-		  	  	    uint8_t *pubKey, size_t pubLen) {
-
-	size_t sigLen  = FALCON_SIG_PADDED_SIZE(logn);
-	uint8_t id[4] = {0x01,0x01,0x01,0x01};
-	char idStr[9];
-	for (int i = 0; i < 4; i++) {
-		snprintf(&idStr[i * 2], 3, "%02X", id[i]);
-	}
-
-	hybridCertificate *cert = createTestCert(id, false,
-											 privKey, privLen,
-											 pubKey, pubLen,
-											 sigLen);
-
-	uint8_t vehicleSig[sigLen];
-	sign_message(logn, idStr,
-						vehicleSig, sigLen,
-						privKey, privLen,
-						pubKey, pubLen,
-						false);
-
-	// create spdu
-	SPDU *spdu = malloc(sizeof(SPDU));
-	spdu->cert = cert;
-	spdu->data = NULL;
-	spdu->ECDSASignature = NULL;
-	spdu->PQCSignature = malloc(sigLen);
-	memcpy(spdu->PQCSignature, vehicleSig, sigLen);
-
-	return spdu;
-}
-
 
 void test_receive_random_frags() {
 
@@ -231,5 +197,16 @@ void test_serialize_certificate() {
 
 	serializeCertificate(cert);
 }
+
+
+
+void test_fragment() {
+
+
+	transmit();
+
+
+}
+
 
 

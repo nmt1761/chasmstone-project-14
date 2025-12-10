@@ -16,8 +16,9 @@ int main() {
 	//test_fragments();
 	//test_certificate();
 	//test_receive_random_frags();
-	test_serialize_certificate();
+	//test_serialize_certificate();
 	//void test_receive();
+	test_fragment();
 
 	printf("done\n");
 }

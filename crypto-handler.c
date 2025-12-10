@@ -65,7 +65,7 @@ int key_gen(unsigned int logn, bool save,
 		printf("Key gen failed: %d\n", r);
 		return 1;
 	}
-	printf("keypair generated.\n\n");
+	//printf("keypair generated.\n\n");
 
 	if (debug) {
 		print_hex("Private Key", privkey, priv_len);
