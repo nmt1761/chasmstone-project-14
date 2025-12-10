@@ -37,12 +37,12 @@ char *serializeCertificate(hybridCertificate *HCid) {
   storedFragments FRAGMENT(hybridCertificate *HCid, int q, float r, int B, int Nrb, BSMData M) {
     
 
-	storedFragments *result = {0};
+	storedFragments result = {0};
     // Calculating some variables needed for fragmentation function
 
 	// minimum size of an SPDU
     //float minS = sizeof(HCid.securityHeaders) + sizeof(S.data) + sizeof(HCid->ECDSASignatureCA) + sizeof(HCid->PQCSignatureCA);
-    size_t minS = SECURITY_HEADERS_SIZE + strlen(M) + ECDSA_SIG_SIZE + PQC_SIG_SIZE;
+    size_t minS = SECURITY_HEADERS_SIZE + strlen(M.data) + ECDSA_SIG_SIZE + PQC_SIG_SIZE;
     
     // maximum size of transport block given our MCS 
     //float maxTB  = 12 * 10 * log2(q) * r * (Nrb - 2) * (1.0 / 8.0);
@@ -134,11 +134,12 @@ char *serializeCertificate(hybridCertificate *HCid) {
 		HCid->PQCSignatureCA = NULL;
 
 		//current BSM
-		BSMData *M = malloc(sizeof(S->data));
+		BSMData M = malloc(sizeof(S->data));
 
 		// overarching while loop starts here
 		storedFragments fragments = FRAGMENT(HCid, q, r, B, Nrb, M);
 
+		int nf = 0; // just a placeholder, this variable should be returned from FRAGMENT function
 		int t = 0;	//current time in ms
 		int i = 1;
 
