@@ -136,8 +136,23 @@ char *serializeCertificate(hybridCertificate *HCid) {
 		//current BSM
 		BSMData *M = malloc(sizeof(S->data));
 
-
+		// overarching while loop starts here
 		storedFragments fragments = FRAGMENT(HCid, q, r, B, Nrb, M);
+
+		int t = 0;	//current time in ms
+		int i = 1;
+
+		for(t = 0; t < TC; t + TM){
+			if (i <= nf){ 		//this line is why nf must be returned by FRAGMENT
+				// fill signature variables and SPDU
+				// transmit using rx or sendwsm or just send to recieve code
+				i += 1;
+			} else {
+				// fill signature variables and SPDU
+				// transmit SPDU
+			}
+		}
+		// while loop ends here
 	/*
 		  while HCid (the current certificate) is active do:
 		  select q (modulation order) and r (code rate) values (sourced from MCS to be used)
@@ -173,5 +188,6 @@ char *serializeCertificate(hybridCertificate *HCid) {
 		  end for
 		end while
 		*/
+
 	return 0;
    }
