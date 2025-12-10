@@ -36,6 +36,8 @@ char *serializeCertificate(hybridCertificate *HCid) {
   // FRAGMENT function will return storedFragments struct containing (number of certificate fragments, (an array of all fragments) )
   storedFragments FRAGMENT(hybridCertificate *HCid, int q, float r, int B, int Nrb, BSMData M) {
     
+
+	storedFragments *result = {0};
     // Calculating some variables needed for fragmentation function
 
 	// minimum size of an SPDU
@@ -70,6 +72,7 @@ char *serializeCertificate(hybridCertificate *HCid) {
     fragment *prev = NULL;
     size_t offset = 0;	//length of certificate currently fragmented
     size_t certLength = COMPLETE_HYBRID_CERT_FRAGMENT_SIZE;	//length of serialized certificate
+    fragment temp = malloc(sizeof(fragment));
 
     while (offset < certLength){
 			size_t chunk = certLength - offset;		//length of certificate left to fragment
@@ -82,26 +85,14 @@ char *serializeCertificate(hybridCertificate *HCid) {
 			frag->fragmentString = malloc(chunk);
 			memcpy(frag->fragmentString, serializedHC + offset, chunk);
 			frag->nextFragment = NULL;
-			/*
-			if head->headFragment == NULL) {
-				head->Fragment = frag;
-			} else {
-				prev->nextFragment = frag;
-			}
-			*/
+
+			prev->nextFragment = frag;
 			prev = frag;
 			offset += chunk;
     	}
 
-    	return head;
-    }
-
-
-    // from here you divide HCid by nf in a way in which preserves the content/uses B (bandwidth) in some way?
-	//{HC1, ..., HCnf} = 0;
-	storedFragments fragments;
     
-    return fragments; // (nf, {HC1, ..., HCnf}) <- maybe no nf
+    return result; // (nf, {HC1, ..., HCnf}) <- maybe no nf
   }
   
 	int transmit(SPDU *S) {
