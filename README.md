@@ -6,12 +6,14 @@ This is project-14's standalone implementation of the CHASM protocol developed b
 Below is an outline of each file:
 
 CHASM-structs
+containing custom structures like fragment, SPDU etc
 
 crypto-handler
-
-main
+our own way of making interactions with the falcon library much easier
 
 recieve (type here, there are two different spellings)
+based off of algorithm 2 in the chasm paper
 
-test
 transmit
+based off of algorithm 1 in the chasm paper, containing our fragmentation function
+- currently unfinished, this is where we believe you should start if you are looking to continue work on this project
